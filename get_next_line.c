@@ -5,178 +5,181 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmartin <lmartin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/13 18:31:48 by lmartin           #+#    #+#             */
-/*   Updated: 2019/10/17 17:26:35 by lmartin          ###   ########.fr       */
+/*   Created: 2019/10/17 19:18:05 by lmartin           #+#    #+#             */
+/*   Updated: 2019/10/17 23:39:17 by lmartin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-/*
-**	FT_STRJOIN
-**	Allocate memory for returned pointer str which is s + the unallocated part
-**	of buffer before /n (all the buffer if no /n).
-**	return (char *)
-*/
-
-char	*ft_strjoin(char **s, char *buffer, int length, int nblbuf)
+void	ft_substr(char buffer[])
 {
 	int		i;
 	int		j;
-	int		k;
-	int		n;
-	char	*str;
+	char	cpy[BUFF_SIZE + 1];
 
-	if (!(str = malloc((length) * sizeof(char))))
-		return (0);
-	n = 0;
-	while (nblbuf > 0 && n < BUFFER_SIZE)
-		if (buffer[n++] == '\n')
-			nblbuf--;
+	cpy[BUFF_SIZE] = '\0';
 	i = 0;
-	while (i + n < BUFFER_SIZE && buffer[i + n] != '\n')
+	while (buffer[i] != '\n' && i < BUFF_SIZE)
 		i++;
-	j = -1;
-	while (++j < length - i)
-		str[j] = (*s)[j];
-	k = j;
-	j = -1;
-	while (++j < length - k)
-		str[k + j] = buffer[j + n];
-	free(*s);
-	return (str);
-}
-
-/*
-**	FT_STRJOIN_WITH_ZERO
-**	Allocate memory for returned pointer str which is s + the unallocated part
-**	of buffer before /n (all the buffer if no /n) and add '\0' to the string
-**	return (char *)
-*/
-
-char	*ft_strjoin_with_zero(char **s, char *buffer, int length, int nblbuf)
-{
-	int		k;
-	int		n;
-	char	*str;
-
-	if (!(str = malloc((length) * sizeof(char))))
-		return (0);
-	n = 0;
-	k = 0;
-	while (k < nblbuf && buffer && n < BUFFER_SIZE)
-		if (buffer[n++] == '\n')
-			k++;
-	if (!(k *= 0) && buffer)
-		while (k + n < BUFFER_SIZE && buffer[k + n] != '\n')
-			k++;
-	nblbuf = -1;
-	while (++nblbuf < (length - 1) - k)
-		str[nblbuf] = (*s)[nblbuf];
-	free(*s);
-	k = -1;
-	if (!buffer)
-		return (str = 0);
-	while (++k < (length - 1) - nblbuf)
-		str[k + nblbuf] = buffer[k + n];
-	str[length - 1] = '\0';
-	return (str);
-}
-
-/*
-**	END_OF_FILE
-**	Handle the case where read return (0).
-**	return (int)
-*/
-
-int		end_of_file(t_file **file, char **line, int length, int nblbuf)
-{
-	int i;
-	int j;
-
-	if (BUFFER_SIZE == 1)
-		*line = ft_strjoin_with_zero(line, (*file)->buffer, length + 2, nblbuf);
-	(*file)->nblbuf = 0;
-	if (!(*line))
-	{
-		free((*file)->buffer);
-		(*file)->buffer = 0;
-		return (0);
-	}
-	i = 0;
+	if (buffer[i] == '\n')
+		i++;
 	j = 0;
-	while (i < length && (*line)[i])
-		if ((*line)[i++] != '\n')
-			j++;
-	if (!j)
-		return (0);
-	free((*file)->buffer);
-	(*file)->buffer = 0;
-	return (1);
+	while (i < BUFF_SIZE)
+		cpy[j++] = buffer[i++];
+	cpy[j] = '\0';
+	i = -1;
+	while (cpy[++i])
+		buffer[i] = cpy[i];
+	buffer[i] = '\0';
 }
 
-/*
-**	FILL_LINE
-**	Fill the line with str_join and str_join_with_zero.
-**	return (int)
-*/
-
-int		fill_line(int fd, t_file ***files, int i, char **line)
+char	*ft_strcat(int size, int length, char **line, char file[])
 {
-	int j;
-	int length;
-	int nblbuf;
+	int		i;
+	char	*cpy;
 
+	if (!(cpy = malloc(sizeof(char) * (size))))
+		return (NULL);
+	i = -1;
+	while (++i < size - length)
+		cpy[i] = (*line)[i];
+	i = -1;
+	while (++i + (size - length) < size)
+		cpy[i + (size - length)] = file[i];
+	return (cpy);
+}
+
+int		check_file(int fd, char files[][BUFF_SIZE + 1])
+{
+	int length;
+
+	if (fd < 0)
+		return (-1);
 	length = 0;
-	nblbuf = (*files)[i]->nblbuf;
-	while (nblbuf == (int)(*files)[i]->nblbuf)
-	{
-		length += get_line_break((*files)[i]->buffer, &((*files)[i]->nblbuf));
-		if (nblbuf != (int)(*files)[i]->nblbuf)
-			*line = ft_strjoin_with_zero(line, (*files)[i]->buffer,
-															length + 1, nblbuf);
-		else
-		{
-			*line = ft_strjoin(line, (*files)[i]->buffer, length, nblbuf);
-			j = 0;
-			while (j < BUFFER_SIZE)
-				(*files)[i]->buffer[j++] = 0;
-			if (!(read(fd, (*files)[i]->buffer, BUFFER_SIZE)))
-				return (end_of_file(&((*files)[i]), line, length, nblbuf));
-			(*files)[i]->nblbuf = 0;
-			nblbuf = 0;
-		}
-	}
+	if (files[fd][0] == '\0' && (length = read(fd, files[fd], BUFF_SIZE)) <= 0)
+		return (length);
+	length = 0;
+	if (files[fd][0] != '\0')
+		while (files[fd][length] && files[fd][length] != '\n' && length < BUFF_SIZE)
+			length++;
+	return (length);
+}
+
+int		copy_and_cut_buffer(int size, int length, char **line, char buffer[])
+{
+	int				i;
+	char			*cpy;
+
+	cpy = ft_strcat(size, length, line, buffer);
+	free((*line));
+	if (!((*line) = malloc(sizeof(char) * (size + 1))))
+		return (-1);
+	i = -1;
+	while (++i < size)
+		(*line)[i] = cpy[i];
+	(*line)[size] = '\0';
+	free(cpy);
+	ft_substr(buffer);
 	return (1);
 }
 
-/*
-**	GET_NEXT_LINE
-**	Get the next line of the file of file descriptor fd and put it in the line
-**	pointer.
-**	return (int)
-*/
+int		copy_and_reset(int size, int length, char **line, char buffer[])
+{
+	int				i;
+	char			*cpy;
+
+	cpy = ft_strcat(size, length, line, buffer);
+	free((*line));
+	if (!((*line) = malloc(sizeof(char) * (size))))
+		return (-1);
+	i = -1;
+	while (++i < size)
+		(*line)[i] = cpy[i];
+	free(cpy);
+	buffer[0] = '\0';
+	return (1);
+}
 
 int		get_next_line(int fd, char **line)
 {
-	int		index;
-	int		ret;
-	static t_file	**files;
+	int				i;
+	int				length;
+	int				size;
+	static char		files[FD_LIMIT + 1][BUFF_SIZE + 1];
 
-	if (fd < 0 || !line)
+	if (!((*line) = malloc(sizeof(char) * 0)))
 		return (-1);
-	if ((index = check_files(fd, &files)) == -1)
-		return (-1);
-	if (!(*line = malloc(0)))
-		return (-1);
-	if (!(files[index]->buffer))
-		return (0);
-	ret = fill_line(fd, &files, index,line);
-	if (fd == 0 || fd == 1)
+	if ((length = check_file(fd, files)) <= 0)
+		return (length);
+	if (files[fd][0] == '\0')
+		return (length);
+	size = length;
+	while (files[fd][0] != '\0')
 	{
-		files[index]->nblbuf = 0;
-		free(files[index]->buffer);
-		files[index]->buffer = 0;
+		if (files[fd][length] == '\n' || length == 0)
+			return(copy_and_cut_buffer(size, length, line, files[fd]));
+		else
+			if (copy_and_reset(size, length, line, files[fd]) < 0)
+				return (-1);
+		if (!length && files[fd][0] == '\0')
+			return (length);
+		if ((length = check_file(fd, files)) < 0)
+			return (length);
+		size += length;
 	}
-	return (ret);
+	printf("SIZE %i\n", size);
+	if (size > 0)
+	{
+		i = copy_and_cut_buffer(size, length, line, files[fd]);
+		files[fd][0] = '\0';
+		return (i);
+	}
+	return (0);
+}
+
+
+#include <fcntl.h>
+#include <stdio.h>
+
+int		main()
+{
+	int fd;
+	int fd2;
+	int ret;
+	char *line;
+
+	fd = open("test", O_RDONLY);
+	fd2 = open("test2", O_RDONLY);
+	/**
+	ret = get_next_line(fd, &line);
+	printf("RET : %i\n", ret);
+	printf("LINE : %s\n", line);
+	ret = get_next_line(fd2, &line);
+	printf("RET : %i\n", ret);
+	printf("LINE : %s\n", line);
+	ret = get_next_line(fd, &line);
+	printf("RET : %i\n", ret);
+	printf("LINE : %s\n", line);
+	ret = get_next_line(fd2, &line);
+	printf("RET : %i\n", ret);
+	printf("LINE : %s\n", line);
+	ret = get_next_line(fd2, &line);
+	printf("RET : %i\n", ret);
+	printf("LINE : %s\n", line);
+	ret = get_next_line(fd, &line);
+	printf("RET : %i\n", ret);
+	printf("LINE : %s\n", line);
+**/
+	ret = get_next_line(fd, &line);
+	while (ret > 0)
+	{
+		printf("RET : %i\n", ret);
+		printf("LINE : %s\n", line);
+		ret = get_next_line(fd, &line);
+	}
+	printf("RET : %i\n", ret);
+	printf("LINE : %s\n", line);
+	return (0);
 }
