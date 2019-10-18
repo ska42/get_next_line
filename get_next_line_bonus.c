@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lmartin <lmartin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/17 19:18:05 by lmartin           #+#    #+#             */
-/*   Updated: 2019/10/18 12:16:22 by lmartin          ###   ########.fr       */
+/*   Created: 2019/10/18 12:17:24 by lmartin           #+#    #+#             */
+/*   Updated: 2019/10/18 12:17:30 by lmartin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 void	ft_substr(char buffer[])
 {
