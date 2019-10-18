@@ -6,7 +6,7 @@
 /*   By: lmartin <lmartin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 19:26:44 by lmartin           #+#    #+#             */
-/*   Updated: 2019/10/18 11:51:51 by lmartin          ###   ########.fr       */
+/*   Updated: 2019/10/18 14:38:05 by lmartin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # endif
 
 # ifndef BUFF_SIZE
-#  define BUFF_SIZE 4096
+#  define BUFF_SIZE 2048
 # endif
 
 int		get_next_line(int fd, char **line);

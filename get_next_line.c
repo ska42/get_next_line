@@ -6,7 +6,7 @@
 /*   By: lmartin <lmartin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 19:18:05 by lmartin           #+#    #+#             */
-/*   Updated: 2019/10/18 12:16:22 by lmartin          ###   ########.fr       */
+/*   Updated: 2019/10/18 15:21:38 by lmartin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,17 @@ void	ft_substr(char buffer[])
 	int		j;
 	char	cpy[BUFF_SIZE + 1];
 
-	cpy[BUFF_SIZE] = '\0';
 	i = 0;
-	while (buffer[i] != '\n' && i < BUFF_SIZE)
+	while (i < BUFF_SIZE + 1)
+		cpy[i++] = '\0';
+	i = 0;
+	while (buffer[i] != '\n' && i < BUFF_SIZE && buffer[i] != '\0')
 		i++;
 	if (buffer[i] == '\n')
 		i++;
 	j = 0;
 	while (i < BUFF_SIZE)
 		cpy[j++] = buffer[i++];
-	cpy[j] = '\0';
 	i = -1;
 	while (cpy[++i])
 		buffer[i] = cpy[i];
@@ -36,13 +37,20 @@ void	ft_substr(char buffer[])
 
 int		check_file(int fd, char files[][BUFF_SIZE + 1])
 {
+	int	i;
 	int length;
 
 	if (fd < 0)
 		return (-1);
 	length = 0;
-	if (files[fd][0] == '\0' && (length = read(fd, files[fd], BUFF_SIZE)) <= 0)
-		return (length);
+	if (files[fd][0] == '\0')
+	{
+		i = 0;
+		while (i < BUFF_SIZE + 1)
+			files[fd][i++] = '\0';
+		if ((length = read(fd, files[fd], BUFF_SIZE)) <= 0)
+			return (length);
+	}
 	length = 0;
 	if (files[fd][0] != '\0')
 		while (files[fd][length]
@@ -108,12 +116,12 @@ int		get_next_line(int fd, char **line)
 	int				size;
 	static char		files[FD_LIMIT + 1][BUFF_SIZE + 1];
 
+	if (!line || !((*line) = malloc(sizeof(char) * 0)))
+		return (-1);
 	if ((length = check_file(fd, files)) < 0)
 		return (length);
 	if (files[fd][0] == '\0')
 		return (length);
-	if (!((*line) = malloc(sizeof(char) * 0)))
-		return (-1);
 	size = 0;
 	while ((size += length) > -1 && files[fd][0] != '\0')
 	{
