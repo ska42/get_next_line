@@ -6,7 +6,7 @@
 /*   By: lmartin <lmartin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/20 12:28:54 by lmartin           #+#    #+#             */
-/*   Updated: 2019/10/20 12:53:53 by lmartin          ###   ########.fr       */
+/*   Updated: 2019/10/21 11:58:40 by lmartin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,14 +92,11 @@ int		get_next_line(int fd, char **line)
 	int				size;
 	static char		files[10242][BUFFER_SIZE + 1];
 
-	if (!line || BUFFER_SIZE <= 0 || !((*line) = malloc(sizeof(char) * 0))
+	if (!line || BUFFER_SIZE <= 0 || !((*line) = malloc(sizeof(char)))
 		|| (length = check_file(fd, files)) < 0)
 		return (-1);
 	if (!length && files[fd][length] != '\n')
-	{
-		free(*line);
-		*line = NULL;
-	}
+		(*line)[0] = '\0';
 	size = 0;
 	while ((size += length) > -1 && (length || files[fd][length] == '\n'))
 	{
