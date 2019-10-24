@@ -37,11 +37,9 @@ void	ft_substr(char buffer[])
 
 int		check_file(int fd, char files[][BUFFER_SIZE + 1])
 {
-	int		b;
 	long	len;
 	long	nb_read;
 
-	b = 0;
 	if (fd < 0 || fd > 10240)
 		return (-1);
 	len = 0;
