@@ -6,7 +6,7 @@
 /*   By: lmartin <lmartin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 19:18:05 by lmartin           #+#    #+#             */
-/*   Updated: 2019/10/21 11:58:29 by lmartin          ###   ########.fr       */
+/*   Updated: 2019/10/23 19:28:25 by lmartin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,12 +100,13 @@ int		get_next_line(int fd, char **line)
 	size = 0;
 	while ((size += length) > -1 && (length || files[fd][length] == '\n'))
 	{
-		if (copy_and_cut_buffer(size, length, line, files[fd]) != 0)
-			return (1);
+		if ((length = copy_and_cut_buffer(size, length, line, files[fd])) != 0)
+			return (length);
 		if ((length = check_file(fd, files)) < 0)
 			return (length);
 	}
 	if (size > 0)
-		return (copy_and_cut_buffer(size, length, line, files[fd]));
+		if (copy_and_cut_buffer(size, length, line, files[fd]) < 0)
+			return (-1);
 	return (0);
 }
